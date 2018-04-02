@@ -1,0 +1,78 @@
+---
+title: "BudeMapPresentation"
+author: "Kerin Grewal"
+date: "April 1, 2018"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include = FALSE, echo= FALSE}
+library(ggmap)
+library(tidyverse)
+library(magick)
+
+
+knitr::opts_chunk$set(echo = FALSE)
+
+map1 <- get_map(location = "Bude", zoom = 14)
+
+watermap <- get_map(location = "Bude", maptype = "watercolor", zoom = 14)
+
+df <- data.frame(location = c('Crooklets Beach', 'Summerleaze Beach', 'The Barrel at Bude'), stringsAsFactors = FALSE)
+
+geo_loc <- geocode(df$location)
+
+df1 <- cbind(df, geo_loc)
+
+
+start <- "Bude North Cornwall Cricket Club"
+end <- "The Barrel at Bude"
+path <- route(start, end, structure = "route")
+
+cricket_club <- image_scale(image_read("https://i.pinimg.com/564x/42/21/20/42212062d2dbf181dc1b1eaa160dce53.jpg"))
+
+summ_beach <- image_scale(image_read("https://www.natureflip.com/sites/default/files/photo//bude-summerleaze-beach-summerleaze-beach-at-bude-cornwall.jpg"))
+
+crook_beach <- image_scale(image_read("https://www.thebeachguide.co.uk/public/geophotos/1450635.jpg"))
+
+```
+
+
+##Roadmap of Bude
+```{r, echo = FALSE}
+ggmap(map1) + geom_point(data = df1, aes(x = lon, y = lat), color = 'red') + 
+  geom_path(
+    aes(x = lon, y = lat), color = "blue", size = 1.5,
+    data = path, lineend = "round"
+  )
+
+```
+
+
+##Watercolor map of Bude
+```{r, echo = FALSE}
+ggmap(watermap) + geom_point(data = df1, aes(x = lon, y = lat), color = 'red') + 
+  geom_path(
+    aes(x = lon, y = lat), color = "blue", size = 1.5,
+    data = path, lineend = "round"
+  )
+```
+
+##Image of Crooklets Beach
+```{r, echo= FALSE}
+
+print(crook_beach)
+```
+
+##Image of Summerleaze Beach
+```{r, echo= FALSE}
+
+print(summ_beach)
+```
+
+##Image of Bude North Cornwall Cricket Club
+```{r, echo= FALSE}
+
+print(cricket_club)
+```
